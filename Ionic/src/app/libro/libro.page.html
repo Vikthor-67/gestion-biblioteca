@@ -1,23 +1,31 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-title>Libros</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding">
   <!-- Buscador -->
-  <ion-searchbar
-    placeholder="Buscar libro por título"
-    (ionInput)="filtrarLibros($event)">
-  </ion-searchbar>
+  <div class="search-container">
+    <ion-searchbar
+      placeholder="Buscar libro por título"
+      (ionInput)="filtrarLibros($event)"
+      class="custom-searchbar"
+    ></ion-searchbar>
+  </div>
 
   <!-- Lista de libros -->
-  <ion-list>
-    <ion-item *ngFor="let l of librosFiltrados" [routerLink]="['/detalle-libro', l.IdLibro]">
+  <ion-list class="book-list">
+    <ion-item
+      *ngFor="let l of librosFiltrados"
+      [routerLink]="['/detalle-libro', l.IdLibro]"
+      class="book-item"
+      detail
+    >
+      <ion-icon slot="start" name="book-outline" class="book-icon"></ion-icon>
       <ion-label>
         <h2>{{ l.Titulo }}</h2>
       </ion-label>
     </ion-item>
   </ion-list>
 </ion-content>
-

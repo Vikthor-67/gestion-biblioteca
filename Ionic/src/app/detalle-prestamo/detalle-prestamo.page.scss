@@ -1,0 +1,52 @@
+$primary-green: #2ecc71;
+$dark-green: #27ae60;
+$text-dark: #2c3e50;
+$text-light: #7f8c8d;
+
+ion-toolbar {
+  --background: linear-gradient(135deg, $primary-green, $dark-green);
+  --color: white;
+}
+
+.loan-detalle {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+
+  .loan-icon-large {
+    font-size: 4rem;
+    color: $primary-green;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: $text-dark;
+    margin-bottom: 24px;
+    border-bottom: 3px solid $primary-green;
+    padding-bottom: 12px;
+    text-align: center;
+  }
+
+  .info-item {
+    margin-bottom: 20px;
+
+    .label {
+      font-size: 0.9rem;
+      color: $text-light;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .value {
+      font-size: 1.2rem;
+      color: $text-dark;
+      font-weight: 500;
+    }
+  }
+}

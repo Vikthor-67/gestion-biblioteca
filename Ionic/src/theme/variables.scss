@@ -1,6 +1,15 @@
 // For information on how to create your own theme, please refer to:
 // https://ionicframework.com/docs/theming/
 
+:root {
+  --ion-color-primary: #2ecc71;         /* verde principal */
+  --ion-color-primary-rgb: 46,204,113;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255,255,255;
+  --ion-color-primary-shade: #27ae60;    /* verde oscuro */
+  --ion-color-primary-tint: #4cdb8a;     /* verde claro */
+}
+
 // Colores verdes personalizados
 $primary-green: #2ecc71;
 $dark-green: #27ae60;

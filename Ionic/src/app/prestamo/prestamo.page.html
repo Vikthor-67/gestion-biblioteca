@@ -1,19 +1,32 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-title>Préstamos</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding">
   <!-- Buscador por ID -->
-  <ion-searchbar
-    placeholder="Buscar préstamo por ID"
-    (ionInput)="filtrarPrestamos($event)">
-  </ion-searchbar>
+  <div class="search-container">
+    <ion-searchbar
+      placeholder="Buscar préstamo por ID"
+      (ionInput)="filtrarPrestamos($event)"
+      class="custom-searchbar"
+    ></ion-searchbar>
+  </div>
 
   <!-- Lista de préstamos -->
-  <ion-list>
-    <ion-item *ngFor="let p of prestamosFiltrados" [routerLink]="['/detalle-prestamo', p.IdPrestamo]">
+  <ion-list class="loan-list">
+    <ion-item
+      *ngFor="let p of prestamosFiltrados"
+      [routerLink]="['/detalle-prestamo', p.IdPrestamo]"
+      class="loan-item"
+      detail
+    >
+      <ion-icon
+        slot="start"
+        name="swap-horizontal-outline"
+        class="loan-icon"
+      ></ion-icon>
       <ion-label>
         <h2>Préstamo #{{ p.IdPrestamo }}</h2>
       </ion-label>

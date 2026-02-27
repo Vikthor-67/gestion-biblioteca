@@ -1,19 +1,28 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-title>Usuarios</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding">
   <!-- Buscador -->
-  <ion-searchbar
-    placeholder="Buscar usuario por nombre"
-    (ionInput)="filtrarUsuarios($event)">
-  </ion-searchbar>
+  <div class="search-container">
+    <ion-searchbar
+      placeholder="Buscar usuario por nombre"
+      (ionInput)="filtrarUsuarios($event)"
+      class="custom-searchbar"
+    ></ion-searchbar>
+  </div>
 
   <!-- Lista de usuarios -->
-  <ion-list>
-    <ion-item *ngFor="let u of usuariosFiltrados" [routerLink]="['/detalle-usuario', u.IdUsuario]">
+  <ion-list class="user-list">
+    <ion-item
+      *ngFor="let u of usuariosFiltrados"
+      [routerLink]="['/detalle-usuario', u.IdUsuario]"
+      class="user-item"
+      detail
+    >
+      <ion-icon slot="start" name="person-outline" class="user-icon"></ion-icon>
       <ion-label>
         <h2>{{ u.Nombre }}</h2>
       </ion-label>

@@ -1,18 +1,26 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Detalle Usuario</ion-title>
+  <ion-toolbar color="primary">
+    <ion-title>Detalle del Usuario</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="usuario">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>{{ usuario.Nombre }}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p>ID: {{ usuario.IdUsuario }}</p>
-      <p>Email: {{ usuario.Email }}</p>
-      <p>Teléfono: {{ usuario.Telefono }}</p>
-    </ion-card-content>
-  </ion-card>
+<ion-content class="ion-padding" *ngIf="usuario">
+  <div class="user-detalle">
+    <!-- Icono grande -->
+    <div class="user-icon-large">
+      <ion-icon name="person-circle-outline"></ion-icon>
+    </div>
+
+    <h1>{{ usuario.Nombre }}</h1>
+
+    <div class="info-item">
+      <span class="label">EMAIL</span>
+      <span class="value">{{ usuario.Email }}</span>
+    </div>
+
+    <div class="info-item">
+      <span class="label">TELÉFONO</span>
+      <span class="value">{{ usuario.Telefono }}</span>
+    </div>
+  </div>
 </ion-content>

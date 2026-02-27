@@ -1,0 +1,68 @@
+// Colores de la app (pueden estar definidos globalmente)
+$primary-green: #2ecc71;
+$dark-green: #27ae60;
+$text-dark: #2c3e50;
+$text-light: #7f8c8d;
+
+ion-toolbar {
+  --background: linear-gradient(135deg, $primary-green, $dark-green);
+  --color: white;
+}
+
+.search-container {
+  margin-bottom: 20px;
+
+  .custom-searchbar {
+    --background: white;
+    --border-radius: 12px;
+    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    --color: $text-dark !important;
+    --icon-color: $primary-green;
+    --placeholder-color: $text-light;
+    padding: 0;
+
+    input {
+      color: $text-dark !important;
+    }
+    .searchbar-input {
+      color: $text-dark !important;
+    }
+  }
+}
+
+.loan-list {
+  background: transparent;
+
+  .loan-item {
+    --background: white;
+    --color: $text-dark !important;
+    --border-radius: 12px;
+    margin-bottom: 8px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+
+    .loan-icon {
+      font-size: 2rem;
+      color: $primary-green;
+      margin-right: 16px;
+    }
+
+    ion-label {
+      color: $text-dark !important;
+      h2 {
+        color: $text-dark !important;
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin: 0;
+      }
+    }
+
+    &::part(detail-icon) {
+      color: $primary-green;
+    }
+  }
+}

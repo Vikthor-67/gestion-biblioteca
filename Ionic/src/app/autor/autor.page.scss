@@ -1,0 +1,77 @@
+// Colores
+$primary-green: #2ecc71;
+$dark-green: #27ae60;
+$text-dark: #2c3e50;
+$text-light: #7f8c8d;
+
+// Toolbar verde
+ion-toolbar {
+  --background: linear-gradient(135deg, $primary-green, $dark-green);
+  --color: white;
+}
+
+// Buscador
+.custom-searchbar {
+  --background: white;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  --color: $text-dark !important;
+  --icon-color: $primary-green;
+  --placeholder-color: $text-light;
+  margin-bottom: 20px;
+
+  input {
+    color: $text-dark !important;
+  }
+  .searchbar-input {
+    color: $text-dark !important;
+  }
+}
+
+// Lista de autores
+.author-list {
+  background: transparent;
+
+  .author-item {
+    --background: white;
+    --color: $text-dark !important;
+    --border-radius: 12px;
+    margin-bottom: 8px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+
+    // Avatar con inicial
+    .author-avatar {
+      background: $primary-green;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      margin-right: 16px;
+    }
+
+    ion-label {
+      color: $text-dark !important;
+      h2 {
+        color: $text-dark !important;
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin: 0;
+      }
+    }
+
+    &::part(detail-icon) {
+      color: $primary-green;
+    }
+  }
+}

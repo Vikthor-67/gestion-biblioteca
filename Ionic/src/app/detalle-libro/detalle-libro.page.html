@@ -1,20 +1,36 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Detalle Libro</ion-title>
+  <ion-toolbar color="primary">
+    <ion-title>Detalle del Libro</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="libro">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>{{ libro.Titulo }}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p>ID: {{ libro.IdLibro }}</p>
-      <p>Año de publicación: {{ libro.AnioPublicacion }}</p>
-      <p>Género: {{ libro.Genero }}</p>
-      <p>Autor: {{ libro.Autor }}</p>
-      <p>Nacionalidad: {{ libro.Nacionalidad }}</p>
-    </ion-card-content>
-  </ion-card>
+<ion-content class="ion-padding" *ngIf="libro">
+  <div class="book-detalle">
+    <!-- Icono grande de libro -->
+    <div class="book-icon-large">
+      <ion-icon name="book-outline"></ion-icon>
+    </div>
+
+    <h1>{{ libro.Titulo }}</h1>
+
+    <div class="info-item">
+      <span class="label">AÑO DE PUBLICACIÓN</span>
+      <span class="value">{{ libro.AnioPublicacion }}</span>
+    </div>
+
+    <div class="info-item">
+      <span class="label">GÉNERO</span>
+      <span class="value">{{ libro.Genero }}</span>
+    </div>
+
+    <div class="info-item">
+      <span class="label">AUTOR</span>
+      <span class="value">{{ libro.Autor }}</span>
+    </div>
+
+    <div class="info-item">
+      <span class="label">NACIONALIDAD</span>
+      <span class="value">{{ libro.Nacionalidad }}</span>
+    </div>
+  </div>
 </ion-content>

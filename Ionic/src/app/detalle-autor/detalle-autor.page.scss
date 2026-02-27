@@ -1,0 +1,44 @@
+// Colores de tu tema verde
+$primary-green: #2ecc71;
+$dark-green: #27ae60;
+$light-bg: #f9f9f9;
+
+ion-toolbar {
+  --background: linear-gradient(135deg, $primary-green, $dark-green);
+  --color: white;
+}
+
+.autor-detalle {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 24px;
+    border-bottom: 3px solid $primary-green;
+    padding-bottom: 12px;
+  }
+
+  .info-item {
+    margin-bottom: 24px;
+
+    .label {
+      font-size: 0.9rem;
+      color: #7f8c8d;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .value {
+      font-size: 1.4rem;
+      color: #2c3e50;
+      font-weight: 500;
+    }
+  }
+}

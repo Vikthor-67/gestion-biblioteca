@@ -1,20 +1,57 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Detalle Préstamo</ion-title>
+  <ion-toolbar color="primary">
+    <ion-title>Detalle del Préstamo</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="prestamo">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Préstamo #{{ prestamo.IdPrestamo }}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p>Fecha préstamo: {{ prestamo.FechaPrestamo }}</p>
-      <p>Fecha devolución: {{ prestamo.FechaDevolucion || 'Pendiente' }}</p>
-      <p>Libro: {{ prestamo.Libro }}</p>
-      <p>Usuario: {{ prestamo.Usuario }}</p>
-      <p>Email: {{ prestamo.Email }}</p>
-    </ion-card-content>
-  </ion-card>
+<ion-content class="ion-padding" *ngIf="prestamo">
+  <div class="loan-detalle">
+    <!-- Icono grande -->
+    <div class="loan-icon-large">
+      <ion-icon name="swap-horizontal-outline"></ion-icon>
+    </div>
+
+    <h1>Préstamo #{{ prestamo.IdPrestamo }}</h1>
+
+    <div class="info-item">
+      <span class="label">FECHA PRÉSTAMO</span>
+      <span class="value"
+        >{{ prestamo.FechaPrestamo | date:'dd/MM/yyyy' }}</span
+      >
+    </div>
+
+    <div class="info-item">
+      <span class="label">FECHA DEVOLUCIÓN</span>
+      <span class="value"
+        >{{ prestamo.FechaDevolucion ? (prestamo.FechaDevolucion |
+        date:'dd/MM/yyyy') : 'Pendiente' }}</span
+      >
+    </div>
+
+    <div class="info-item">
+      <span class="label">LIBRO</span>
+      <span class="value">{{ prestamo.Libro }}</span>
+    </div>
+
+    <div class="info-item">
+      <span class="label">USUARIO</span>
+      <span class="value">{{ prestamo.Usuario }}</span>
+    </div>
+
+    <div class="info-item">
+      <span class="label">EMAIL</span>
+      <span class="value">{{ prestamo.Email }}</span>
+    </div>
+
+    <!-- Estado del préstamo (opcional, si tu objeto lo incluye) -->
+    <div class="info-item" *ngIf="prestamo.Activo !== undefined">
+      <span class="label">ESTADO</span>
+      <span
+        class="value"
+        [style.color]="prestamo.Activo ? '#2ecc71' : '#e74c3c'"
+      >
+        {{ prestamo.Activo ? 'Activo' : 'Devuelto' }}
+      </span>
+    </div>
+  </div>
 </ion-content>
