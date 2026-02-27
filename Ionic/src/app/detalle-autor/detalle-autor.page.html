@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Detalle Autor</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="autor">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ autor.Nombre }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>ID: {{ autor.IdAutor }}</p>
+      <p>Nacionalidad: {{ autor.Nacionalidad }}</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

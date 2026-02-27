@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Autores</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Buscador -->
+  <ion-searchbar
+    placeholder="Buscar autor por nombre"
+    (ionInput)="filtrarAutores($event)"
+  >
+  </ion-searchbar>
+
+  <!-- Lista de autores -->
+  <ion-list>
+    <ion-item
+      *ngFor="let a of autoresFiltrados"
+      [routerLink]="['/detalle-autor', a.IdAutor]"
+    >
+      <ion-label>
+        <h2>{{ a.Nombre }}</h2>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-buttons slot="start">
+    <ion-back-button defaultHref="/home"></ion-back-button>
+  </ion-buttons>
+</ion-content>

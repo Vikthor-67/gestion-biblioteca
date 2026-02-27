@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Detalle Préstamo</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="prestamo">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Préstamo #{{ prestamo.IdPrestamo }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Fecha préstamo: {{ prestamo.FechaPrestamo }}</p>
+      <p>Fecha devolución: {{ prestamo.FechaDevolucion || 'Pendiente' }}</p>
+      <p>Libro: {{ prestamo.Libro }}</p>
+      <p>Usuario: {{ prestamo.Usuario }}</p>
+      <p>Email: {{ prestamo.Email }}</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

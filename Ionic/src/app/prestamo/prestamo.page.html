@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Préstamos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Buscador por ID -->
+  <ion-searchbar
+    placeholder="Buscar préstamo por ID"
+    (ionInput)="filtrarPrestamos($event)">
+  </ion-searchbar>
+
+  <!-- Lista de préstamos -->
+  <ion-list>
+    <ion-item *ngFor="let p of prestamosFiltrados" [routerLink]="['/detalle-prestamo', p.IdPrestamo]">
+      <ion-label>
+        <h2>Préstamo #{{ p.IdPrestamo }}</h2>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

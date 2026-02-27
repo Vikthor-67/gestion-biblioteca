@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Detalle Libro</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="libro">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ libro.Titulo }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>ID: {{ libro.IdLibro }}</p>
+      <p>Año de publicación: {{ libro.AnioPublicacion }}</p>
+      <p>Género: {{ libro.Genero }}</p>
+      <p>Autor: {{ libro.Autor }}</p>
+      <p>Nacionalidad: {{ libro.Nacionalidad }}</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

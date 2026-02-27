@@ -1,0 +1,70 @@
+<ion-app>
+  <ion-split-pane contentId="main-content">
+    <ion-menu contentId="main-content" type="overlay">
+      <!-- Cabecera con gradiente verde -->
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="menu-header">
+          <ion-title>Biblioteca UTH</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="menu-content">
+        <!-- Perfil del usuario -->
+        <div class="profile-container">
+          <ion-avatar class="profile-avatar">
+            <img src="assets/img/allan.jpeg" alt="Victor Tercero" />
+          </ion-avatar>
+          <div class="profile-info">
+            <h2>Victor Tercero</h2>
+            <p>vmtercero@uth.hn</p>
+          </div>
+        </div>
+
+        <!-- Opciones del menú como tarjetas (usando menuItems) -->
+        <div class="menu-items">
+          <ion-menu-toggle auto-hide="false" *ngFor="let item of menuItems">
+            <ion-card
+              button
+              [routerLink]="item.route"
+              routerDirection="root"
+              class="menu-card"
+            >
+              <div class="card-content">
+                <ion-icon [name]="item.icon" class="card-icon"></ion-icon>
+                <div class="card-text">
+                  <h3>{{ item.title }}</h3>
+                  <p>{{ item.subtitle }}</p>
+                </div>
+              </div>
+            </ion-card>
+          </ion-menu-toggle>
+        </div>
+
+        <!-- Tarjeta de estadísticas con el número DINÁMICO de préstamos activos -->
+        <div class="stats-card">
+          <ion-card class="green-stats">
+            <ion-card-header>
+              <ion-card-title>Préstamos activos</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <p>
+                Tienes <strong>{{ activeLoansCount }} libros</strong> prestados
+                actualmente.
+              </p>
+              <ion-button
+                fill="clear"
+                size="small"
+                [routerLink]="['/prestamo']"
+                [queryParams]="{ activos: true }"
+              >
+                VER DETALLES
+              </ion-button>
+            </ion-card-content>
+          </ion-card>
+        </div>
+      </ion-content>
+    </ion-menu>
+
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+  </ion-split-pane>
+</ion-app>

@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Usuarios</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Buscador -->
+  <ion-searchbar
+    placeholder="Buscar usuario por nombre"
+    (ionInput)="filtrarUsuarios($event)">
+  </ion-searchbar>
+
+  <!-- Lista de usuarios -->
+  <ion-list>
+    <ion-item *ngFor="let u of usuariosFiltrados" [routerLink]="['/detalle-usuario', u.IdUsuario]">
+      <ion-label>
+        <h2>{{ u.Nombre }}</h2>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
