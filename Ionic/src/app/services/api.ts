@@ -1,30 +1,66 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
+import { AutorDetalle, AutorListaItem } from '../autor/autor.module';
+import { CapacitorHttp } from '@capacitor/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Api {
-  private apiUrl = 'http://192.168.1.9:3001';
+  private baseUrl = `${environment.apiUrl}`;
 
-  constructor(private http: HttpClient) {
-    console.log('API URL en uso:', this.apiUrl);
+  constructor(private http: HttpClient) {}
+
+  async getAutor(): Promise<any[]> {
+    const url = `${this.baseUrl}/api/autores`;
+
+    const res = await CapacitorHttp.get({
+      url,
+      headers: { Accept: 'application/json' },
+    });
+
+    return res.data;
   }
 
-  getAutor(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/api/autores`);
+  async getLibros(): Promise<any[]> {
+    const url = `${this.baseUrl}/api/libros`;
+
+    const res = await CapacitorHttp.get({
+      url,
+      headers: { Accept: 'application/json' },
+    });
+
+    return res.data;
   }
 
-  getLibros(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/api/libros`);
+  async getPrestamos(): Promise<any[]> {
+    const url = `${this.baseUrl}/api/prestamos`;
+
+    const res = await CapacitorHttp.get({
+      url,
+      headers: { Accept: 'application/json' },
+    });
+
+    return res.data;
   }
 
-  getPrestamos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/api/prestamos`);
+  async getUsuarios(): Promise<any[]> {
+    const url = `${this.baseUrl}/api/usuarios`;
+
+    const res = await CapacitorHttp.get({
+      url,
+      headers: { Accept: 'application/json' },
+    });
+
+    return res.data;
   }
 
-  getUsuarios(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/api/usuarios`);
+  // Se agrego el ID
+  getAutorxID(IdAutor: number): Observable<AutorDetalle> {
+    return this.http.get<AutorDetalle>(
+      `${this.baseUrl}/api/autores/${IdAutor}`,
+    );
   }
 }

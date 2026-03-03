@@ -6,19 +6,24 @@ import { Api } from '../services/api';
   selector: 'app-detalle-autor',
   templateUrl: './detalle-autor.page.html',
   styleUrls: ['./detalle-autor.page.scss'],
-  standalone: false
+  standalone: false,
 })
 export class DetalleAutorPage implements OnInit {
   autor: any;
 
   constructor(private route: ActivatedRoute, private api: Api) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('IdAutor');
     if (id) {
-      this.api.getAutor().subscribe(data => {
-        this.autor = data.find(a => a.IdAutor.toString() === id);
-      });
+      try {
+        const data = await this.api.getAutor();
+        if (Array.isArray(data)) {
+          this.autor = data.find((a: any) => a.IdAutor.toString() === id);
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
 }

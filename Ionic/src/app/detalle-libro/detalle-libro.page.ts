@@ -13,12 +13,15 @@ export class DetalleLibroPage implements OnInit {
 
   constructor(private route: ActivatedRoute, private api: Api) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('IdLibro');
     if (id) {
-      this.api.getLibros().subscribe(data => {
-        this.libro = data.find(l => l.IdLibro.toString() === id);
-      });
+      try {
+        const data = await this.api.getLibros();
+        this.libro = data.find((l: any) => l.IdLibro.toString() === id);
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
 }

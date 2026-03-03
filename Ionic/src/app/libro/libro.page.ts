@@ -1,20 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
 import { Api } from '../services/api';
 
 @Component({
   selector: 'app-libro',
   templateUrl: './libro.page.html',
   styleUrls: ['./libro.page.scss'],
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, RouterModule],
+  standalone: false,
 })
 export class LibroPage implements OnInit {
-  cargando: boolean = false;
-  errorMsg: string = '';
+  cargando = true;
+  errorMsg = '';
   libro: any[] = [];
   librosFiltrados: any[] = [];
 
@@ -22,10 +17,6 @@ export class LibroPage implements OnInit {
 
   ngOnInit() {
     this.cargar();
-    this.api.getLibros().subscribe((data) => {
-      this.libro = data.sort((a, b) => a.Titulo.localeCompare(b.Titulo));
-      this.librosFiltrados = [...this.libro];
-    });
   }
 
   filtrarLibros(event: any) {
@@ -37,28 +28,24 @@ export class LibroPage implements OnInit {
     );
   }
 
-  cargar(event?: any) {
+  async cargar(event?: any) {
     this.cargando = true;
     this.errorMsg = '';
 
-    this.api.getLibros().subscribe({
-      next: (data) => {
-        console.log('Datos recibidos:', data);
-        this.libro = data || [];
-        this.librosFiltrados = [...this.libro];
-        this.cargando = false;
-        if (event) event.target.complete();
-      },
-      error: (err) => {
-        console.log('Error de API:', err);
-        this.errorMsg = 'Error al cargar, verifique la api';
-        this.cargando = false;
-        if (event) {
-          event.target.complete();
-          console.error(err);
-        }
-      },
-    });
+    try {
+      const data = await this.api.getLibros();
+      this.libro = data.sort((a: any, b: any) => a.Titulo.localeCompare(b.Titulo)) || [];
+      this.librosFiltrados = [...this.libro];
+      this.cargando = false;
+      if (event) event.target.complete();
+    } catch (e: any) {
+      console.log('ERROR NATIVO:', e);
+      this.errorMsg = 'No se pudo cargar la información (nativo).';
+      alert(JSON.stringify(e, null, 2));
+    } finally {
+      this.cargando = false;
+      if (event) event.target.complete();
+    }
   }
 
   buscar(event: any) {
@@ -69,7 +56,7 @@ export class LibroPage implements OnInit {
     } else {
       const esNumero = /^\d+$/.test(filtro);
 
-      this.librosFiltrados = this.libro.filter((item) => {
+      this.librosFiltrados = this.libro.filter((item: any) => {
         if (esNumero) {
           return item.IdLibro?.toString() === filtro;
         } else {

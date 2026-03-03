@@ -9,12 +9,12 @@ import { LibroPageRoutingModule } from './libro-routing.module';
 import { LibroPage } from './libro.page';
 
 @NgModule({
+  declarations: [LibroPage],
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
     LibroPageRoutingModule,
-    LibroPage
   ],
 })
 export class LibroPageModule {}

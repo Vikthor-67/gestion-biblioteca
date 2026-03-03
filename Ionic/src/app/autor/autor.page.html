@@ -5,11 +5,21 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <!-- Mensaje de cargando -->
+  <ion-text *ngIf="cargando" class="ion-text-center">
+    <p>Cargando autores...</p>
+  </ion-text>
+
+  <!-- Mensaje de error -->
+  <ion-text *ngIf="errorMsg" color="danger" class="ion-text-center">
+    <p>{{ errorMsg }}</p>
+  </ion-text>
+
   <!-- Buscador -->
-  <div class="search-container">
+  <div class="search-container" *ngIf="!cargando">
     <ion-searchbar
       placeholder="Buscar autor por nombre"
-      (ionInput)="filtrarAutores($event)"
+      (ionInput)="buscar($event)"
       class="custom-searchbar"
     ></ion-searchbar>
   </div>
@@ -22,12 +32,17 @@
       class="author-item"
       detail
     >
-      <div slot="start" class="author-avatar">
+      <div slot="start" class="author-avatar" *ngIf="a.Nombre">
         <span>{{ a.Nombre.charAt(0) }}</span>
       </div>
       <ion-label>
-        <h2>{{ a.Nombre }}</h2>
+        <h2>{{ a.Nombre || 'Sin nombre' }}</h2>
       </ion-label>
     </ion-item>
   </ion-list>
+
+  <!-- Mensaje si no hay autores -->
+  <ion-text *ngIf="!cargando && autoresFiltrados.length === 0 && !errorMsg" class="ion-text-center">
+    <p>No hay autores disponibles</p>
+  </ion-text>
 </ion-content>

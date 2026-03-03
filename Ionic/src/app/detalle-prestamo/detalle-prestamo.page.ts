@@ -13,12 +13,15 @@ export class DetallePrestamoPage implements OnInit {
 
   constructor(private route: ActivatedRoute, private api: Api) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('IdPrestamo');
     if (id) {
-      this.api.getPrestamos().subscribe(data => {
-        this.prestamo = data.find(p => p.IdPrestamo.toString() === id);
-      });
+      try {
+        const data = await this.api.getPrestamos();
+        this.prestamo = data.find((p: any) => p.IdPrestamo.toString() === id);
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
 }

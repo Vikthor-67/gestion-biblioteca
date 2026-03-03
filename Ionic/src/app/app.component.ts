@@ -69,15 +69,13 @@ export class AppComponent implements OnInit {
     this.loadActiveLoans();
   }
 
-  loadActiveLoans() {
-    this.api.getPrestamos().subscribe({
-      next: (data: Prestamo[]) => {
-        this.activeLoans = data.filter((p) => !p.FechaDevolucion);
-        this.activeLoansCount = this.activeLoans.length;
-      },
-      error: (err: any) => {
-        console.error('Error al cargar préstamos activos', err);
-      },
-    });
+  async loadActiveLoans() {
+    try {
+      const data = await this.api.getPrestamos();
+      this.activeLoans = data.filter((p: Prestamo) => !p.FechaDevolucion);
+      this.activeLoansCount = this.activeLoans.length;
+    } catch (err: any) {
+      console.error('Error al cargar préstamos activos', err);
+    }
   }
 }

@@ -9,12 +9,12 @@ import { PrestamoPageRoutingModule } from './prestamo-routing.module';
 import { PrestamoPage } from './prestamo.page';
 
 @NgModule({
+  declarations: [PrestamoPage],
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
     PrestamoPageRoutingModule,
-    PrestamoPage
   ],
 })
 export class PrestamoPageModule {}

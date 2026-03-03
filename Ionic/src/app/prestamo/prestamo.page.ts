@@ -1,23 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Api } from '../services/api';
 
 @Component({
   selector: 'app-prestamo',
   templateUrl: './prestamo.page.html',
   styleUrls: ['./prestamo.page.scss'],
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, RouterModule],
+  standalone: false,
 })
 export class PrestamoPage implements OnInit {
-  cargando: boolean = false;
-  errorMsg: string = '';
+  cargando = true;
+  errorMsg = '';
   prestamo: any[] = [];
   prestamosFiltrados: any[] = [];
-  soloActivos: boolean = false;
+  soloActivos = false;
 
   constructor(
     private api: Api,
@@ -38,56 +34,31 @@ export class PrestamoPage implements OnInit {
     );
   }
 
-  cargar(event?: any) {
+  async cargar(event?: any) {
     this.cargando = true;
     this.errorMsg = '';
 
-    this.api.getPrestamos().subscribe({
-      next: (data) => {
-        console.log('Datos recibidos:', data);
-        let prestamos = data || [];
+    try {
+      const data = await this.api.getPrestamos();
+      let prestamos = data || [];
 
-        if (this.soloActivos) {
-          prestamos = prestamos.filter((p) => !p.FechaDevolucion);
-        }
+      if (this.soloActivos) {
+        prestamos = prestamos.filter((p: any) => !p.FechaDevolucion);
+      }
 
-        this.prestamo = prestamos.sort((a, b) => a.IdPrestamo - b.IdPrestamo);
-        this.prestamosFiltrados = [...this.prestamo];
-        this.cargando = false;
-        if (event) event.target.complete();
-      },
-      error: (err) => {
-        console.log('Error de API:', err);
-        this.errorMsg = 'Error al cargar, verifique la api';
-        this.cargando = false;
-        if (event) {
-          event.target.complete();
-          console.error(err);
-        }
-      },
-    });
-  }
-
-  buscar(event: any) {
-    const filtro = event.detail.value?.toLowerCase() || '';
-
-    if (filtro === '') {
+      this.prestamo = prestamos.sort(
+        (a: any, b: any) => a.IdPrestamo - b.IdPrestamo,
+      );
       this.prestamosFiltrados = [...this.prestamo];
-    } else {
-      const esNumero = /^\d+$/.test(filtro);
-
-      this.prestamosFiltrados = this.prestamo.filter((item) => {
-        if (esNumero) {
-          return item.IdPrestamo?.toString() === filtro;
-        } else {
-          return (
-            item.FechaPrestamo?.toLowerCase().includes(filtro) ||
-            item.FechaDevolucion?.toLowerCase().includes(filtro) ||
-            item.IdLibro?.toLowerCase().includes(filtro) ||
-            item.IdUsuario?.toLowerCase().includes(filtro)
-          );
-        }
-      });
+      this.cargando = false;
+      if (event) event.target.complete();
+    } catch (e: any) {
+      console.log('ERROR NATIVO:', e);
+      this.errorMsg = 'No se pudo cargar la información (nativo).';
+      alert(JSON.stringify(e, null, 2));
+    } finally {
+      this.cargando = false;
+      if (event) event.target.complete();
     }
   }
 }

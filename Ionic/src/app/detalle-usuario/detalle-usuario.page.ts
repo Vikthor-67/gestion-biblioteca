@@ -13,12 +13,15 @@ export class DetalleUsuarioPage implements OnInit {
 
   constructor(private route: ActivatedRoute, private api: Api) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('IdUsuario');
     if (id) {
-      this.api.getUsuarios().subscribe(data => {
-        this.usuario = data.find(u => u.IdUsuario.toString() === id);
-      });
+      try {
+        const data = await this.api.getUsuarios();
+        this.usuario = data.find((u: any) => u.IdUsuario.toString() === id);
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
 }
