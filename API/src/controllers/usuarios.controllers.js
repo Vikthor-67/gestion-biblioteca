@@ -30,3 +30,39 @@ exports.ListarUsuariosxid = async (req, res) => {
         res.status(500).json({message : "Error al obtener Usuarios", error: error.message});
     }
 };
+
+//POST: Insertar usuario
+exports.insertar = async (req, res) => {
+    try {
+        const {
+            Nombre,
+            Email,
+            Telefono,
+        } = req.body;
+
+        // validaciones
+
+        if (!Nombre || !Email || !Telefono) {
+            return res.status(400).json({
+                message: "Campos inválidos, favor verificar cada uno",
+            });
+        }
+
+        const pool = await getpool();
+        await pool
+            .request()
+            .input("Nombre", sql.NVarChar(150), Nombre)
+            .input("Email", sql.NVarChar(200), Email)
+            .input("Telefono", sql.NVarChar(30), Telefono)
+            .execute("sp_InsertarUsuario");
+
+        res.status(201).json({
+            message: "Usuario registrado de forma correcta",
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Error criminal no se se inserto ningun usuario, cambie de carrera mejor",
+            error: error.message,
+        });
+    }
+};

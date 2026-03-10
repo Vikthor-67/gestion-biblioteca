@@ -30,3 +30,41 @@ exports.ListarLibrosxid = async (req, res) => {
         res.status(500).json({message : "Error al obtener Libros", error: error.message});
     }
 };
+
+//POST: Insertar libro
+exports.insertar = async (req, res) => {
+    try {
+        const {
+            Titulo,
+            AnioPublicacion,
+            Genero,
+            IdAutor,
+        } = req.body;
+
+        // validaciones
+
+        if (!Titulo || !AnioPublicacion || !Genero || !IdAutor) {
+            return res.status(400).json({
+                message: "Campos inválidos, favor verificar cada uno",
+            });
+        }
+
+        const pool = await getpool();
+        await pool
+            .request()
+            .input("Titulo", sql.NVarChar(150), Titulo)
+            .input("AnioPublicacion", sql.Int, AnioPublicacion)
+            .input("Genero", sql.NVarChar(100), Genero)
+            .input("IdAutor", sql.Int, IdAutor)
+            .execute("sp_InsertarLibro");
+
+        res.status(201).json({
+            message: "Libro registrado de forma correcta",
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Error criminal no se se inserto ningun libro, cambie de carrera mejor",
+            error: error.message,
+        });
+    }
+};

@@ -8,4 +8,7 @@ router.get("/", controller.ListarUsuarios);
 //Get por ID 
 router.get("/:IdUsuario", controller.ListarUsuariosxid);
 
+//POST Insertar Autor
+router.post("/", controller.insertar);
+
 module.exports = router;

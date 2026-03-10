@@ -15,17 +15,23 @@
 
     <div class="info-item">
       <span class="label">FECHA PRÉSTAMO</span>
-      <span class="value"
-        >{{ prestamo.FechaPrestamo | date:'dd/MM/yyyy' }}</span
-      >
+      <span class="value">{{ formatearFecha(prestamo.FechaPrestamo) }}</span>
     </div>
 
     <div class="info-item">
       <span class="label">FECHA DEVOLUCIÓN</span>
-      <span class="value"
-        >{{ prestamo.FechaDevolucion ? (prestamo.FechaDevolucion |
-        date:'dd/MM/yyyy') : 'Pendiente' }}</span
+      <span class="value">
+        {{ prestamo.FechaDevolucion ? formatearFecha(prestamo.FechaDevolucion) : 'Pendiente' }}
+      </span>
+      <ion-button
+        *ngIf="!prestamo.FechaDevolucion"
+        size="small"
+        color="primary"
+        (click)="abrirModalEditar()"
       >
+        <ion-icon slot="start" name="pencil"></ion-icon>
+        Marcar como devuelto
+      </ion-button>
     </div>
 
     <div class="info-item">
@@ -43,6 +49,16 @@
       <span class="value">{{ prestamo.Email }}</span>
     </div>
 
+    <div class="info-item">
+      <span class="label">UBICACION DEL PRESTAMO</span>
+      <span class="value" *ngIf="tieneUbicacion(); else sinUbicacion">
+        {{ prestamo.Latitud | number:'1.6-6' }}, {{ prestamo.Longitud | number:'1.6-6' }}
+      </span>
+      <ng-template #sinUbicacion>
+        <span class="value">No registrada</span>
+      </ng-template>
+    </div>
+
     <!-- Estado del préstamo (opcional, si tu objeto lo incluye) -->
     <div class="info-item" *ngIf="prestamo.Activo !== undefined">
       <span class="label">ESTADO</span>
@@ -54,4 +70,51 @@
       </span>
     </div>
   </div>
+
+  <!-- Modal para editar fecha de devolución -->
+  <ion-modal [isOpen]="modalEditandoAbierto" (didDismiss)="cerrarModalEditar()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>Registrar Devolución</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModalEditar()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <form [formGroup]="formActualizarFecha" (ngSubmit)="guardarFechaDevolucion()">
+          <ion-item lines="inset" class="ion-margin-bottom">
+            <ion-label position="stacked">Fecha de Devolución *</ion-label>
+            <ion-input
+              type="date"
+              formControlName="FechaDevolucion"
+            ></ion-input>
+          </ion-item>
+          <ion-note
+            color="danger"
+            *ngIf="campoInvalido('FechaDevolucion')"
+            class="ion-padding-start"
+          >
+            La fecha de devolución es requerida.
+          </ion-note>
+
+          <ion-note color="info" class="ion-padding ion-margin-top">
+            <strong>Nota:</strong> Esta acción marcará el préstamo como devuelto.
+          </ion-note>
+
+          <ion-button
+            type="submit"
+            expand="block"
+            color="success"
+            class="ion-margin-top"
+            [disabled]="guardando"
+          >
+            {{ guardando ? 'Guardando...' : 'Confirmar Devolución' }}
+          </ion-button>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

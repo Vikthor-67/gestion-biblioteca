@@ -32,4 +32,112 @@
       </ion-label>
     </ion-item>
   </ion-list>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button color="primary" (click)="abrirModalCrear()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-modal [isOpen]="modalAbierto" (didDismiss)="cerrarCrearModal(false)">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>Nuevo Préstamo</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarCrearModal()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <form [formGroup]="formNuevoPrestamo" (ngSubmit)="guardarNuevoPrestamo()">
+          <ion-item lines="inset" class="ion-margin-bottom">
+            <ion-label position="stacked">Fecha Préstamo *</ion-label>
+            <ion-input type="date" formControlName="FechaPrestamo"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="campoInvalido('FechaPrestamo')" class="ion-padding-start">
+            La fecha de préstamo es requerida.
+          </ion-note>
+
+          <ion-item lines="inset" class="ion-margin-top ion-margin-bottom">
+            <ion-label position="stacked">Autor *</ion-label>
+            <ion-select formControlName="IdAutor" interface="popover" placeholder="Selecciona un autor" [disabled]="cargandoAutores">
+              <ion-select-option *ngFor="let a of autores" [value]="a.IdAutor">
+                {{ a.Nombre }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="campoInvalido('IdAutor')" class="ion-padding-start">
+            Debes seleccionar un autor primero.
+          </ion-note>
+
+          <ion-item lines="inset" class="ion-margin-top ion-margin-bottom">
+            <ion-label position="stacked">Libro *</ion-label>
+            <ion-select formControlName="IdLibro" interface="popover" placeholder="Selecciona un libro" [disabled]="!formNuevoPrestamo.get('IdAutor')?.value || cargandoLibros">
+              <ion-select-option *ngFor="let l of libros" [value]="l.IdLibro">
+                {{ l.Titulo }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="campoInvalido('IdLibro')" class="ion-padding-start">
+            Debes seleccionar un libro.
+          </ion-note>
+          <ion-note color="info" *ngIf="!formNuevoPrestamo.get('IdAutor')?.value" class="ion-padding-start">
+            Selecciona un autor para ver sus libros.
+          </ion-note>
+
+          <ion-item lines="inset" class="ion-margin-top ion-margin-bottom">
+            <ion-label position="stacked">Usuario *</ion-label>
+            <ion-select formControlName="IdUsuario" interface="popover" placeholder="Selecciona un usuario" [disabled]="cargandoUsuarios">
+              <ion-select-option *ngFor="let u of usuarios" [value]="u.IdUsuario">
+                {{ u.Nombre }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="campoInvalido('IdUsuario')" class="ion-padding-start">
+            Debes seleccionar un usuario.
+          </ion-note>
+
+          <ion-note color="info" class="ion-padding ion-margin-top">
+            <strong>Nota:</strong> FechaDevolucion quedará como Pendiente (NULL) hasta que devuelvas el libro.
+          </ion-note>
+
+          <div style="margin: 16px 0;">
+            <ion-label style="margin-left: 16px; font-weight: 500;">Ubicación</ion-label>
+            <ion-button
+              expand="block"
+              fill="outline"
+              type="button"
+              (click)="obtenerUbicacion()"
+              [disabled]="cargandoUbicacion"
+              style="margin: 8px 16px;"
+            >
+              <ion-icon slot="start" name="location-outline"></ion-icon>
+              {{ cargandoUbicacion ? 'Obteniendo ubicación...' : 'Obtener mi ubicación' }}
+            </ion-button>
+            <ion-note
+              *ngIf="formNuevoPrestamo.get('Latitud')?.value && formNuevoPrestamo.get('Longitud')?.value"
+              color="success"
+              style="margin-left: 16px; display: block;"
+            >
+              <ion-icon name="checkmark-circle"></ion-icon>
+              Lat: {{ formNuevoPrestamo.get('Latitud')?.value | number:'1.6-6' }},
+              Lng: {{ formNuevoPrestamo.get('Longitud')?.value | number:'1.6-6' }}
+            </ion-note>
+          </div>
+
+          <ion-button
+            type="submit"
+            expand="block"
+            color="success"
+            class="ion-margin-top"
+            [disabled]="guardando"
+          >
+            {{ guardando ? 'Guardando...' : 'Guardar préstamo' }}
+          </ion-button>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

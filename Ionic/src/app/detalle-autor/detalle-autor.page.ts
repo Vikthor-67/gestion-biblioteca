@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Api } from '../services/api';
+import { Api } from '../services/autores';
 
 @Component({
   selector: 'app-detalle-autor',

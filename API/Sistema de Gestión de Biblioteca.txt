@@ -45,6 +45,8 @@ CREATE TABLE Prestamo (
     FechaDevolucion DATE NULL, -- NULL indica que aún no se ha devuelto
     IdLibro INT NOT NULL,
     IdUsuario INT NOT NULL,
+    Latitud DECIMAL(10,7) NULL,
+    Longitud DECIMAL(10,7) NULL,
     CONSTRAINT FK_Prestamo_Libro FOREIGN KEY (IdLibro) REFERENCES Libro(IdLibro),
     CONSTRAINT FK_Prestamo_Usuario FOREIGN KEY (IdUsuario) REFERENCES Usuario(IdUsuario),
     CONSTRAINT CHK_Fechas CHECK (FechaDevolucion IS NULL OR FechaDevolucion >= FechaPrestamo)
@@ -140,6 +142,8 @@ BEGIN
         p.IdPrestamo,
         p.FechaPrestamo,
         p.FechaDevolucion,
+        p.Latitud,
+        p.Longitud,
         l.Titulo AS Libro,
         u.Nombre AS Usuario,
         u.Email
@@ -160,6 +164,8 @@ BEGIN
         p.IdPrestamo,
         p.FechaPrestamo,
         p.FechaDevolucion,
+        p.Latitud,
+        p.Longitud,
         l.IdLibro,
         l.Titulo AS Libro,
         l.AnioPublicacion,
@@ -203,10 +209,10 @@ VALUES
 GO
 
 -- Préstamos (uno por libro, a diferentes usuarios)
-INSERT INTO Prestamo (FechaPrestamo, FechaDevolucion, IdLibro, IdUsuario)
+INSERT INTO Prestamo (FechaPrestamo, FechaDevolucion, IdLibro, IdUsuario, Latitud, Longitud)
 VALUES
-    (GETDATE(), NULL, 1, 1),  -- Prestado hoy, aún no devuelto
-    (DATEADD(day, -5, GETDATE()), DATEADD(day, -2, GETDATE()), 2, 2); -- Devuelto hace 2 días
+    (GETDATE(), NULL, 1, 1, 14.0722750, -87.1921360),  -- Prestado hoy, aún no devuelto
+    (DATEADD(day, -5, GETDATE()), DATEADD(day, -2, GETDATE()), 2, 2, NULL, NULL); -- Devuelto hace 2 días
 GO
 
 -- ======================================================

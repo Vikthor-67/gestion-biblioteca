@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Api } from '../services/api';
+import { LibrosService } from '../services/libros';
 
 @Component({
   selector: 'app-detalle-libro',
@@ -11,13 +11,13 @@ import { Api } from '../services/api';
 export class DetalleLibroPage implements OnInit {
   libro: any;
 
-  constructor(private route: ActivatedRoute, private api: Api) {}
+  constructor(private route: ActivatedRoute, private librosService: LibrosService) {}
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('IdLibro');
     if (id) {
       try {
-        const data = await this.api.getLibros();
+        const data = await this.librosService.getLibros();
         this.libro = data.find((l: any) => l.IdLibro.toString() === id);
       } catch (err) {
         console.error(err);

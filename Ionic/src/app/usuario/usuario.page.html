@@ -28,4 +28,61 @@
       </ion-label>
     </ion-item>
   </ion-list>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button color="primary" (click)="agregarUsuario()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-modal [isOpen]="modalAbierto" (didDismiss)="cerrarCrearModal(false)">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>Nuevo Usuario</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarCrearModal()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <form [formGroup]="formNuevoUsuario" (ngSubmit)="guardarNuevoUsuario()">
+          <ion-item lines="inset" class="ion-margin-bottom">
+            <ion-label position="stacked">Nombre *</ion-label>
+            <ion-input type="text" formControlName="Nombre" placeholder="Ej: Juan Pérez"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="campoInvalido('Nombre')" class="ion-padding-start">
+            El nombre es requerido.
+          </ion-note>
+
+          <ion-item lines="inset" class="ion-margin-top ion-margin-bottom">
+            <ion-label position="stacked">Email *</ion-label>
+            <ion-input type="email" formControlName="Email" placeholder="Ej: correo@ejemplo.com"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="campoInvalido('Email')" class="ion-padding-start">
+            El email es requerido y debe ser válido.
+          </ion-note>
+
+          <ion-item lines="inset" class="ion-margin-top ion-margin-bottom">
+            <ion-label position="stacked">Teléfono *</ion-label>
+            <ion-input type="text" formControlName="Telefono" placeholder="Ej: 9999-9999"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="campoInvalido('Telefono')" class="ion-padding-start">
+            El teléfono es requerido.
+          </ion-note>
+
+          <ion-button
+            type="submit"
+            expand="block"
+            color="success"
+            class="ion-margin-top"
+            [disabled]="guardando"
+          >
+            {{ guardando ? 'Guardando...' : 'Guardar usuario' }}
+          </ion-button>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

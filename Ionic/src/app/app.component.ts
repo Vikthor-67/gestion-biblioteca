@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { App } from '@capacitor/app';
-import { Api } from './services/api';
+import { PrestamosService } from './services/prestamos';
 
 interface Prestamo {
   IdPrestamo: number;
@@ -50,7 +50,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private api: Api,
+    private prestamosService: PrestamosService,
   ) {
     App.addListener('backButton', () => {
       if (this.router.url === '/home') {
@@ -71,7 +71,7 @@ export class AppComponent implements OnInit {
 
   async loadActiveLoans() {
     try {
-      const data = await this.api.getPrestamos();
+      const data = await this.prestamosService.getPrestamos();
       this.activeLoans = data.filter((p: Prestamo) => !p.FechaDevolucion);
       this.activeLoansCount = this.activeLoans.length;
     } catch (err: any) {
