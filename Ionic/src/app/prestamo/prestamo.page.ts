@@ -79,11 +79,32 @@ export class PrestamoPage implements OnInit, OnDestroy {
     }
   }
 
+  private ordenarPrestamos(lista: any[]): any[] {
+    return [...lista].sort((a: any, b: any) => {
+      const cmpUsuario = String(a?.Usuario || '').localeCompare(
+        String(b?.Usuario || ''),
+        'es',
+        { sensitivity: 'base', ignorePunctuation: true },
+      );
+      if (cmpUsuario !== 0) return cmpUsuario;
+
+      const cmpLibro = String(a?.Libro || '').localeCompare(
+        String(b?.Libro || ''),
+        'es',
+        { sensitivity: 'base', ignorePunctuation: true },
+      );
+      if (cmpLibro !== 0) return cmpLibro;
+
+      return Number(a?.IdPrestamo || 0) - Number(b?.IdPrestamo || 0);
+    });
+  }
+
   filtrarPrestamos(event: any) {
-    const valor = event.target.value.toLowerCase();
-    this.prestamosFiltrados = this.prestamo.filter((p) =>
+    const valor = String(event.target.value || '').toLowerCase();
+    const filtrados = this.prestamo.filter((p) =>
       p.IdPrestamo.toString().toLowerCase().includes(valor),
     );
+    this.prestamosFiltrados = this.ordenarPrestamos(filtrados);
   }
 
   async cargar(event?: any) {
@@ -98,9 +119,7 @@ export class PrestamoPage implements OnInit, OnDestroy {
         prestamos = prestamos.filter((p: any) => !p.FechaDevolucion);
       }
 
-      this.prestamo = prestamos.sort(
-        (a: any, b: any) => a.IdPrestamo - b.IdPrestamo,
-      );
+      this.prestamo = this.ordenarPrestamos(prestamos);
       this.prestamosFiltrados = [...this.prestamo];
       this.cargando = false;
       if (event) event.target.complete();
@@ -184,7 +203,12 @@ export class PrestamoPage implements OnInit, OnDestroy {
     this.cargandoAutores = true;
     try {
       const resp = await this.autoresService.getAutor();
-      this.autores = resp || [];
+      this.autores = [...(resp || [])].sort((a: any, b: any) =>
+        String(a?.Nombre || '').localeCompare(String(b?.Nombre || ''), 'es', {
+          sensitivity: 'base',
+          ignorePunctuation: true,
+        }),
+      );
 
       console.log('👥 Autores cargados:', this.autores);
       if (this.autores.length > 0) {
@@ -217,7 +241,12 @@ export class PrestamoPage implements OnInit, OnDestroy {
     this.cargandoLibros = true;
     try {
       const resp = await this.librosService.getLibros();
-      this.librosOriginal = resp || [];
+      this.librosOriginal = [...(resp || [])].sort((a: any, b: any) =>
+        String(a?.Titulo || '').localeCompare(String(b?.Titulo || ''), 'es', {
+          sensitivity: 'base',
+          ignorePunctuation: true,
+        }),
+      );
 
       console.log('📚 Libros cargados:', this.librosOriginal);
       if (this.librosOriginal.length > 0) {
@@ -250,7 +279,12 @@ export class PrestamoPage implements OnInit, OnDestroy {
     this.cargandoUsuarios = true;
     try {
       const resp = await this.usuariosService.getUsuarios();
-      this.usuarios = resp || [];
+      this.usuarios = [...(resp || [])].sort((a: any, b: any) =>
+        String(a?.Nombre || '').localeCompare(String(b?.Nombre || ''), 'es', {
+          sensitivity: 'base',
+          ignorePunctuation: true,
+        }),
+      );
 
       if (this.usuarios.length === 0) {
         const toast = await this.toastCtrl.create({

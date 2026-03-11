@@ -35,13 +35,30 @@ export class AutorPage implements OnInit {
     this.cargar();
   }
 
+  private normalizarTexto(texto: string): string {
+    return String(texto || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+
+  private ordenarAutores(lista: AutorListaItem[]): AutorListaItem[] {
+    return [...lista].sort((a, b) =>
+      String(a?.Nombre || '').localeCompare(String(b?.Nombre || ''), 'es', {
+        sensitivity: 'base',
+        ignorePunctuation: true,
+      }),
+    );
+  }
+
   async cargar(event?: any) {
     this.cargando = true;
     this.errorMsg = '';
 
     try {
       const data = await this.api.getAutor();
-      this.autor = data || [];
+      this.autor = this.ordenarAutores(data || []);
       this.autoresFiltrados = [...this.autor];
     } catch (e: any) {
       console.log('ERROR NATIVO:', e);
@@ -54,16 +71,17 @@ export class AutorPage implements OnInit {
   }
 
   buscar(event: any) {
-    const q = (event.target.value || '').toLowerCase().trim();
+    const q = this.normalizarTexto(event.target.value || '');
     if (!q) {
       this.autoresFiltrados = [...this.autor];
       return;
     }
-    this.autoresFiltrados = this.autor.filter(
+    const filtrados = this.autor.filter(
       (a) =>
-        (a.Nombre || '').toLowerCase().includes(q) ||
-        (a.Nacionalidad || '').toLowerCase().includes(q),
+        this.normalizarTexto(a.Nombre || '').includes(q) ||
+        this.normalizarTexto(a.Nacionalidad || '').includes(q),
     );
+    this.autoresFiltrados = this.ordenarAutores(filtrados);
   }
   
   badgeColor(estado: string) {

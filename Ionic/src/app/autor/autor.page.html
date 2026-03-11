@@ -19,6 +19,7 @@
   <div class="search-container" *ngIf="!cargando">
     <ion-searchbar
       placeholder="Buscar autor por nombre"
+      autocapitalize="sentences"
       (ionInput)="buscar($event)"
       class="custom-searchbar"
     ></ion-searchbar>
@@ -67,7 +68,7 @@
         <form [formGroup]="formNuevoAutor" (ngSubmit)="guardarNuevoAutor()">
           <ion-item lines="inset" class="ion-margin-bottom">
             <ion-label position="stacked">Nombre *</ion-label>
-            <ion-input formControlName="Nombre" placeholder="Nombre del autor"></ion-input>
+            <ion-input formControlName="Nombre" placeholder="Nombre del autor" autocapitalize="sentences"></ion-input>
           </ion-item>
           <ion-note color="danger" *ngIf="campoInvalido('Nombre')" class="ion-padding-start">
             El nombre es requerido (max 150 caracteres).
@@ -75,7 +76,7 @@
 
           <ion-item lines="inset" class="ion-margin-top ion-margin-bottom">
             <ion-label position="stacked">Nacionalidad *</ion-label>
-            <ion-input formControlName="Nacionalidad" placeholder="Nacionalidad"></ion-input>
+            <ion-input formControlName="Nacionalidad" placeholder="Nacionalidad" autocapitalize="sentences"></ion-input>
           </ion-item>
           <ion-note color="danger" *ngIf="campoInvalido('Nacionalidad')" class="ion-padding-start">
             La nacionalidad es requerida (max 100 caracteres).

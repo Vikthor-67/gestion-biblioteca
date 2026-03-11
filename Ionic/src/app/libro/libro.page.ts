@@ -40,13 +40,29 @@ export class LibroPage implements OnInit {
     this.cargar();
   }
 
-  filtrarLibros(event: any) {
-    const valor = event.target.value.toLowerCase();
-    const quitarAcentos = (texto: string) =>
-      texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    this.librosFiltrados = this.libro.filter((l) =>
-      quitarAcentos(l.Titulo.toLowerCase()).includes(quitarAcentos(valor)),
+  private normalizarTexto(texto: string): string {
+    return String(texto || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+
+  private ordenarLibros(lista: any[]): any[] {
+    return [...lista].sort((a: any, b: any) =>
+      String(a?.Titulo || '').localeCompare(String(b?.Titulo || ''), 'es', {
+        sensitivity: 'base',
+        ignorePunctuation: true,
+      }),
     );
+  }
+
+  filtrarLibros(event: any) {
+    const valor = this.normalizarTexto(event.target.value || '');
+    const filtrados = this.libro.filter((l) =>
+      this.normalizarTexto(l?.Titulo || '').includes(valor),
+    );
+    this.librosFiltrados = this.ordenarLibros(filtrados);
   }
 
   async cargar(event?: any) {
@@ -55,7 +71,7 @@ export class LibroPage implements OnInit {
 
     try {
       const data = await this.librosService.getLibros();
-      this.libro = data.sort((a: any, b: any) => a.Titulo.localeCompare(b.Titulo)) || [];
+      this.libro = this.ordenarLibros(data || []);
       this.librosFiltrados = [...this.libro];
       this.cargando = false;
       if (event) event.target.complete();
@@ -70,25 +86,26 @@ export class LibroPage implements OnInit {
   }
 
   buscar(event: any) {
-    const filtro = event.detail.value?.toLowerCase() || '';
+    const filtro = this.normalizarTexto(event.detail.value || '');
 
     if (filtro === '') {
       this.librosFiltrados = [...this.libro];
     } else {
       const esNumero = /^\d+$/.test(filtro);
 
-      this.librosFiltrados = this.libro.filter((item: any) => {
+      const filtrados = this.libro.filter((item: any) => {
         if (esNumero) {
           return item.IdLibro?.toString() === filtro;
         } else {
           return (
-            item.Titulo?.toLowerCase().includes(filtro) ||
-            item.AnioPublicacion?.toLowerCase().includes(filtro) ||
-            item.Genero?.toLowerCase().includes(filtro) ||
-            item.IdAutor?.toLowerCase().includes(filtro)
+            this.normalizarTexto(item.Titulo || '').includes(filtro) ||
+            this.normalizarTexto(item.AnioPublicacion || '').includes(filtro) ||
+            this.normalizarTexto(item.Genero || '').includes(filtro) ||
+            this.normalizarTexto(item.IdAutor || '').includes(filtro)
           );
         }
       });
+      this.librosFiltrados = this.ordenarLibros(filtrados);
     }
   }
 
@@ -115,7 +132,12 @@ export class LibroPage implements OnInit {
     this.cargandoAutores = true;
     try {
       const resp = await this.autoresService.getAutor();
-      this.autores = resp || [];
+      this.autores = [...(resp || [])].sort((a: any, b: any) =>
+        String(a?.Nombre || '').localeCompare(String(b?.Nombre || ''), 'es', {
+          sensitivity: 'base',
+          ignorePunctuation: true,
+        }),
+      );
 
       if (this.autores.length === 0) {
         const toast = await this.toastCtrl.create({

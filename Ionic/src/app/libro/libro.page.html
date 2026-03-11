@@ -9,6 +9,7 @@
   <div class="search-container">
     <ion-searchbar
       placeholder="Buscar libro por título"
+      autocapitalize="sentences"
       (ionInput)="filtrarLibros($event)"
       class="custom-searchbar"
     ></ion-searchbar>
@@ -50,7 +51,7 @@
         <form [formGroup]="formNuevoLibro" (ngSubmit)="guardarNuevoLibro()">
           <ion-item lines="inset" class="ion-margin-bottom">
             <ion-label position="stacked">Titulo *</ion-label>
-            <ion-input formControlName="Titulo" placeholder="Titulo del libro"></ion-input>
+            <ion-input formControlName="Titulo" placeholder="Titulo del libro" autocapitalize="sentences"></ion-input>
           </ion-item>
           <ion-note color="danger" *ngIf="campoInvalido('Titulo')" class="ion-padding-start">
             El titulo es requerido (max 200 caracteres).
@@ -66,7 +67,7 @@
 
           <ion-item lines="inset" class="ion-margin-top ion-margin-bottom">
             <ion-label position="stacked">Genero *</ion-label>
-            <ion-input formControlName="Genero" placeholder="Genero del libro"></ion-input>
+            <ion-input formControlName="Genero" placeholder="Genero del libro" autocapitalize="sentences"></ion-input>
           </ion-item>
           <ion-note color="danger" *ngIf="campoInvalido('Genero')" class="ion-padding-start">
             El genero es requerido (max 100 caracteres).

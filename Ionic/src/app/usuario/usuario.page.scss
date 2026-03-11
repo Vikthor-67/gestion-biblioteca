@@ -70,3 +70,13 @@ ion-toolbar {
 ion-fab {
   bottom: 80px !important;
 }
+
+.telefono-item {
+  ion-text[slot='start'] {
+    align-self: flex-end;
+    margin-right: 8px;
+    padding-bottom: 12px;
+    font-weight: 600;
+    color: $text-dark;
+  }
+}

@@ -27,7 +27,14 @@ export class UsuarioPage implements OnInit {
     this.formNuevoUsuario = this.fb.group({
       Nombre: ['', [Validators.required, Validators.maxLength(150)]],
       Email: ['', [Validators.required, Validators.email, Validators.maxLength(200)]],
-      Telefono: ['', [Validators.required, Validators.maxLength(30)]],
+      Telefono: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(9),
+          Validators.pattern(/^\d{4}-\d{4}$/),
+        ],
+      ],
     });
   }
 
@@ -35,15 +42,33 @@ export class UsuarioPage implements OnInit {
     this.cargar();
   }
 
+  private normalizarTexto(texto: string): string {
+    return String(texto || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+
+  private ordenarUsuarios(lista: any[]): any[] {
+    return [...lista].sort((a: any, b: any) =>
+      String(a?.Nombre || '').localeCompare(String(b?.Nombre || ''), 'es', {
+        sensitivity: 'base',
+        ignorePunctuation: true,
+      }),
+    );
+  }
+
   filtrarUsuarios(event: any) {
-    const q = (event.target.value || '').toLowerCase().trim();
+    const q = this.normalizarTexto(event.target.value || '');
     if (!q) {
       this.usuariosFiltrados = [...this.usuarios];
       return;
     }
-    this.usuariosFiltrados = this.usuarios.filter(
-      (u) => (u.Nombre || '').toLowerCase().includes(q),
+    const filtrados = this.usuarios.filter((u) =>
+      this.normalizarTexto(u.Nombre || '').includes(q),
     );
+    this.usuariosFiltrados = this.ordenarUsuarios(filtrados);
   }
 
   async cargar(event?: any) {
@@ -52,7 +77,7 @@ export class UsuarioPage implements OnInit {
 
     try {
       const data = await this.usuariosService.getUsuarios();
-      this.usuarios = data || [];
+      this.usuarios = this.ordenarUsuarios(data || []);
       this.usuariosFiltrados = [...this.usuarios];
     } catch (e: any) {
       console.log('ERROR NATIVO:', e);
@@ -84,6 +109,20 @@ export class UsuarioPage implements OnInit {
     return !!control && control.invalid && (control.dirty || control.touched);
   }
 
+  formatearTelefono(event: any) {
+    const raw = String(event?.detail?.value ?? event?.target?.value ?? '');
+    const soloDigitos = raw.replace(/\D/g, '').slice(0, 8);
+    const formateado =
+      soloDigitos.length > 4
+        ? `${soloDigitos.slice(0, 4)}-${soloDigitos.slice(4)}`
+        : soloDigitos;
+
+    const telefonoControl = this.formNuevoUsuario.get('Telefono');
+    if (telefonoControl && telefonoControl.value !== formateado) {
+      telefonoControl.setValue(formateado, { emitEvent: false });
+    }
+  }
+
   async guardarNuevoUsuario() {
     if (this.formNuevoUsuario.invalid) {
       this.formNuevoUsuario.markAllAsTouched();
@@ -100,7 +139,7 @@ export class UsuarioPage implements OnInit {
     const payload: UsuariosInsert = {
       Nombre: String(v.Nombre).trim(),
       Email: String(v.Email).trim(),
-      Telefono: String(v.Telefono).trim(),
+      Telefono: `+504 ${String(v.Telefono).trim()}`,
     };
 
     this.guardando = true;

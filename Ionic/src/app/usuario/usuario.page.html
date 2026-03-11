@@ -9,6 +9,7 @@
   <div class="search-container">
     <ion-searchbar
       placeholder="Buscar usuario por nombre"
+      autocapitalize="sentences"
       (ionInput)="filtrarUsuarios($event)"
       class="custom-searchbar"
     ></ion-searchbar>
@@ -50,7 +51,7 @@
         <form [formGroup]="formNuevoUsuario" (ngSubmit)="guardarNuevoUsuario()">
           <ion-item lines="inset" class="ion-margin-bottom">
             <ion-label position="stacked">Nombre *</ion-label>
-            <ion-input type="text" formControlName="Nombre" placeholder="Ej: Juan Pérez"></ion-input>
+            <ion-input type="text" formControlName="Nombre" placeholder="Ej: Juan Pérez" autocapitalize="sentences"></ion-input>
           </ion-item>
           <ion-note color="danger" *ngIf="campoInvalido('Nombre')" class="ion-padding-start">
             El nombre es requerido.
@@ -64,12 +65,16 @@
             El email es requerido y debe ser válido.
           </ion-note>
 
-          <ion-item lines="inset" class="ion-margin-top ion-margin-bottom">
+          <ion-item lines="inset" class="ion-margin-top ion-margin-bottom telefono-item">
             <ion-label position="stacked">Teléfono *</ion-label>
-            <ion-input type="text" formControlName="Telefono" placeholder="Ej: 9999-9999"></ion-input>
+            <ion-text slot="start">+504</ion-text>
+            <ion-input type="tel" inputmode="numeric" maxlength="9" formControlName="Telefono" placeholder="9999-9999" (ionInput)="formatearTelefono($event)"></ion-input>
           </ion-item>
-          <ion-note color="danger" *ngIf="campoInvalido('Telefono')" class="ion-padding-start">
+          <ion-note color="danger" *ngIf="campoInvalido('Telefono') && formNuevoUsuario.get('Telefono')?.hasError('required')" class="ion-padding-start">
             El teléfono es requerido.
+          </ion-note>
+          <ion-note color="danger" *ngIf="campoInvalido('Telefono') && formNuevoUsuario.get('Telefono')?.hasError('pattern')" class="ion-padding-start">
+            Formato válido: 9999-9999.
           </ion-note>
 
           <ion-button
