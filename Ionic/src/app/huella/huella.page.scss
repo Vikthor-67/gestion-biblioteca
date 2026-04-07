@@ -1,0 +1,101 @@
+#container {
+  padding: 1rem;
+}
+
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.setting-item {
+  background: var(--ion-color-light);
+  padding: 1.5rem;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.setting-header {
+  flex: 1;
+}
+
+.setting-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+.description {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.875rem;
+  color: var(--ion-color-medium);
+}
+
+/* Opciones de Tiempo */
+.time-options {
+  background: var(--ion-color-light);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.time-options h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+.option-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.time-button {
+  --border-radius: 8px;
+  height: auto;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-transform: none;
+}
+
+/* Info Boxes */
+.info-box {
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255, 193, 7, 0.12);
+  border-left: 4px solid var(--ion-color-warning);
+}
+
+.info-box.success {
+  background: rgba(76, 175, 80, 0.12);
+  border-left-color: var(--ion-color-success);
+}
+
+.info-box ion-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.info-box p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ion-color-dark);
+}
+
+.test-button {
+  margin-top: 0.5rem;
+  --border-radius: 8px;
+}

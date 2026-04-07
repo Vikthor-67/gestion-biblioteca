@@ -1,0 +1,1 @@
+export { BiometriaService } from './biometria';

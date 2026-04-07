@@ -1,0 +1,52 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/folder/inbox"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Huella Dactilar</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div id="container">
+    <div class="settings-container">
+      <!-- Toggle Principal -->
+      <div class="setting-item">
+        <div class="setting-header">
+          <h2>Usar Huella Dactilar</h2>
+          <p class="description">Protege tu app con tu huella biométrica</p>
+        </div>
+        <ion-toggle
+          [(ngModel)]="configuracion.habilitada"
+          (ionChange)="cambiarEstadoHuella($event)"
+          color="primary"
+        ></ion-toggle>
+      </div>
+
+      <!-- Opciones de Tiempo (solo si está habilitada) -->
+      <div *ngIf="configuracion.habilitada" class="time-options">
+        <h3>Tiempo para bloquear la app</h3>
+        <p class="description">¿En cuánto tiempo se bloqueará al salir?</p>
+        
+        <div class="option-group">
+          <ion-button
+            *ngFor="let tiempo of tiemposDisponibles"
+            [fill]="configuracion.tiempoBloqueo === tiempo.segundos ? 'solid' : 'outline'"
+            [color]="configuracion.tiempoBloqueo === tiempo.segundos ? 'primary' : 'medium'"
+            (click)="seleccionarTiempo(tiempo.segundos)"
+            class="time-button"
+            expand="block"
+          >
+            {{ tiempo.label }}
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Info Box de Éxito -->
+      <div class="info-box success" *ngIf="configuracion.habilitada">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <p>✓ Huella dactilar habilitada</p>
+      </div>
+    </div>
+  </div>
+</ion-content>

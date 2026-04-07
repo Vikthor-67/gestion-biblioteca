@@ -60,6 +60,11 @@ const routes: Routes = [
         (m) => m.DetalleUsuarioPageModule,
       ),
   },
+  {
+    path: 'huella',
+    loadChildren: () =>
+      import('./huella/huella.module').then((m) => m.HuellaPageModule),
+  },
 ];
 
 @NgModule({
