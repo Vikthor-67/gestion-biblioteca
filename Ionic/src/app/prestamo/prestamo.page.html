@@ -5,10 +5,10 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <!-- Buscador por ID -->
+  <!-- Buscador -->
   <div class="search-container">
     <ion-searchbar
-      placeholder="Buscar préstamo por ID"
+      placeholder="Buscar por libro o usuario"
       autocapitalize="sentences"
       (ionInput)="filtrarPrestamos($event)"
       class="custom-searchbar"
@@ -29,10 +29,20 @@
         class="loan-icon"
       ></ion-icon>
       <ion-label>
-        <h2>Préstamo #{{ p.IdPrestamo }}</h2>
+        <h2>{{ p.Libro || 'Libro sin nombre' }}</h2>
+        <p>{{ p.Usuario || 'Usuario sin nombre' }}</p>
       </ion-label>
     </ion-item>
   </ion-list>
+
+  <ion-note
+    *ngIf="!cargando && prestamosFiltrados.length === 0"
+    color="medium"
+    class="ion-text-center ion-padding"
+    style="display: block;"
+  >
+    {{ soloActivos ? 'No hay préstamos actualmente.' : 'No hay préstamos para mostrar.' }}
+  </ion-note>
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button color="primary" (click)="abrirModalCrear()">
@@ -84,8 +94,18 @@
           <ion-note color="danger" *ngIf="campoInvalido('IdLibro')" class="ion-padding-start">
             Debes seleccionar un libro.
           </ion-note>
+          <ion-note color="warning" *ngIf="libroSeleccionadoSinStock()" class="ion-padding-start">
+            El libro seleccionado no tiene stock disponible.
+          </ion-note>
           <ion-note color="info" *ngIf="!formNuevoPrestamo.get('IdAutor')?.value" class="ion-padding-start">
-            Selecciona un autor para ver sus libros.
+            Selecciona un autor para ver sus libros con stock disponible.
+          </ion-note>
+          <ion-note
+            color="warning"
+            *ngIf="formNuevoPrestamo.get('IdAutor')?.value && !cargandoLibros && libros.length === 0"
+            class="ion-padding-start"
+          >
+            Este autor no tiene libros con stock disponible.
           </ion-note>
 
           <ion-item lines="inset" class="ion-margin-top ion-margin-bottom">
@@ -133,7 +153,7 @@
             expand="block"
             color="success"
             class="ion-margin-top"
-            [disabled]="guardando"
+            [disabled]="guardando || formNuevoPrestamo.invalid || libroSeleccionadoSinStock()"
           >
             {{ guardando ? 'Guardando...' : 'Guardar préstamo' }}
           </ion-button>

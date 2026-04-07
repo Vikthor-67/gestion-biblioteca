@@ -39,6 +39,23 @@
       <ion-label>
         <h2>{{ a.Nombre || 'Sin nombre' }}</h2>
       </ion-label>
+
+      <ion-buttons slot="end">
+        <ion-button
+          fill="clear"
+          color="primary"
+          (click)="abrirModalEditar(a, $event)"
+        >
+          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+        </ion-button>
+        <ion-button
+          fill="clear"
+          color="danger"
+          (click)="eliminarAutor(a, $event)"
+        >
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
     </ion-item>
   </ion-list>
 
@@ -90,6 +107,49 @@
             [disabled]="guardando"
           >
             {{ guardando ? 'Guardando...' : 'Guardar autor' }}
+          </ion-button>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal [isOpen]="modalEditarAbierto" (didDismiss)="cerrarEditarModal(false)">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>Editar Autor</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarEditarModal()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <form [formGroup]="formEditarAutor" (ngSubmit)="guardarEdicionAutor()">
+          <ion-item lines="inset" class="ion-margin-bottom">
+            <ion-label position="stacked">Nombre *</ion-label>
+            <ion-input formControlName="Nombre" placeholder="Nombre del autor" autocapitalize="sentences"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="campoEditarInvalido('Nombre')" class="ion-padding-start">
+            El nombre es requerido (max 150 caracteres).
+          </ion-note>
+
+          <ion-item lines="inset" class="ion-margin-top ion-margin-bottom">
+            <ion-label position="stacked">Nacionalidad *</ion-label>
+            <ion-input formControlName="Nacionalidad" placeholder="Nacionalidad" autocapitalize="sentences"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="campoEditarInvalido('Nacionalidad')" class="ion-padding-start">
+            La nacionalidad es requerida (max 100 caracteres).
+          </ion-note>
+
+          <ion-button
+            type="submit"
+            expand="block"
+            color="success"
+            class="ion-margin-top"
+            [disabled]="actualizando"
+          >
+            {{ actualizando ? 'Guardando...' : 'Guardar cambios' }}
           </ion-button>
         </form>
       </ion-content>

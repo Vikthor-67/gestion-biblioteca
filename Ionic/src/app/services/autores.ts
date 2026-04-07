@@ -13,6 +13,15 @@ export class Api {
 
   constructor(private http: HttpClient) {}
 
+  private resolverRespuestaHttp(res: any): any {
+    const status = Number(res?.status || 0);
+    if (status >= 200 && status < 300) {
+      return res?.data;
+    }
+
+    throw new Error(res?.data?.message || 'Ocurrio un error en la solicitud.');
+  }
+
   async getAutor(): Promise<any[]> {
     const url = `${this.baseUrl}/api/autores`;
 
@@ -38,12 +47,38 @@ export class Api {
         url,
         headers: { 'Content-Type': 'application/json' },
         data: payload,
-      }).then((res) => res.data)
+      }).then((res) => this.resolverRespuestaHttp(res))
+    );
+  }
+
+  Actualizar(idAutor: number, payload: AutoresUpdate): Observable<any> {
+    const url = `${this.baseUrl}/api/autores/${idAutor}`;
+    return from(
+      CapacitorHttp.put({
+        url,
+        headers: { 'Content-Type': 'application/json' },
+        data: payload,
+      }).then((res) => this.resolverRespuestaHttp(res))
+    );
+  }
+
+  Eliminar(idAutor: number): Observable<any> {
+    const url = `${this.baseUrl}/api/autores/${idAutor}`;
+    return from(
+      CapacitorHttp.delete({
+        url,
+        headers: { Accept: 'application/json' },
+      }).then((res) => this.resolverRespuestaHttp(res))
     );
   }
 }
 
 export interface AutoresInsert {
+  Nombre: string;
+  Nacionalidad: string;
+}
+
+export interface AutoresUpdate {
   Nombre: string;
   Nacionalidad: string;
 }

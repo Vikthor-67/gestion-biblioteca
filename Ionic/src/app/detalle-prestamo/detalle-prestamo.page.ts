@@ -40,8 +40,7 @@ export class DetallePrestamoPage implements OnInit {
     const id = this.route.snapshot.paramMap.get('IdPrestamo');
     if (id) {
       try {
-        const data = await this.prestamosService.getPrestamos();
-        this.prestamo = data.find((p: any) => p.IdPrestamo.toString() === id);
+        this.prestamo = await this.prestamosService.getPrestamoxID(Number(id));
       } catch (err) {
         console.error(err);
       }

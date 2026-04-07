@@ -23,6 +23,17 @@ export class PrestamosService {
     return res.data;
   }
 
+  async getPrestamoxID(idPrestamo: number): Promise<any> {
+    const url = `${this.baseUrl}/api/prestamos/${idPrestamo}`;
+
+    const res = await CapacitorHttp.get({
+      url,
+      headers: { Accept: 'application/json' },
+    });
+
+    return res.data;
+  }
+
   Insertar(payload: PrestamosInsert): Observable<any> {
     const url = `${this.baseUrl}/api/prestamos`;
     return from(

@@ -26,7 +26,25 @@
       <ion-icon slot="start" name="book-outline" class="book-icon"></ion-icon>
       <ion-label>
         <h2>{{ l.Titulo }}</h2>
+        <p>Stock: {{ l.Stock ?? 0 }}</p>
       </ion-label>
+
+      <ion-buttons slot="end">
+        <ion-button
+          fill="clear"
+          color="primary"
+          (click)="abrirModalEditar(l, $event)"
+        >
+          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+        </ion-button>
+        <ion-button
+          fill="clear"
+          color="danger"
+          (click)="eliminarLibro(l, $event)"
+        >
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
     </ion-item>
   </ion-list>
 
@@ -85,6 +103,14 @@
             Debes seleccionar un autor.
           </ion-note>
 
+          <ion-item lines="inset" class="ion-margin-top ion-margin-bottom">
+            <ion-label position="stacked">Stock *</ion-label>
+            <ion-input type="number" formControlName="Stock" placeholder="Cantidad disponible"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="campoInvalido('Stock')" class="ion-padding-start">
+            El stock debe ser un numero mayor o igual a 0.
+          </ion-note>
+
           <ion-button
             type="submit"
             expand="block"
@@ -93,6 +119,61 @@
             [disabled]="guardando"
           >
             {{ guardando ? 'Guardando...' : 'Guardar libro' }}
+          </ion-button>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal [isOpen]="modalEditarAbierto" (didDismiss)="cerrarEditarModal(false)">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>Editar Libro</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarEditarModal()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <form [formGroup]="formEditarLibro" (ngSubmit)="guardarEdicionLibro()">
+          <ion-item lines="inset" class="ion-margin-bottom">
+            <ion-label position="stacked">Titulo *</ion-label>
+            <ion-input formControlName="Titulo" placeholder="Titulo del libro" autocapitalize="sentences"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="campoEditarInvalido('Titulo')" class="ion-padding-start">
+            El titulo es requerido (max 200 caracteres).
+          </ion-note>
+
+          <ion-item lines="inset" class="ion-margin-top ion-margin-bottom">
+            <ion-label position="stacked">Autor *</ion-label>
+            <ion-select formControlName="IdAutor" interface="popover" placeholder="Selecciona un autor" [disabled]="cargandoAutores">
+              <ion-select-option *ngFor="let a of autores" [value]="a.IdAutor">
+                {{ a.Nombre }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="campoEditarInvalido('IdAutor')" class="ion-padding-start">
+            Debes seleccionar un autor.
+          </ion-note>
+
+          <ion-item lines="inset" class="ion-margin-top ion-margin-bottom">
+            <ion-label position="stacked">Stock *</ion-label>
+            <ion-input type="number" formControlName="Stock" placeholder="Cantidad disponible"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="campoEditarInvalido('Stock')" class="ion-padding-start">
+            El stock debe ser un numero mayor o igual a 0.
+          </ion-note>
+
+          <ion-button
+            type="submit"
+            expand="block"
+            color="success"
+            class="ion-margin-top"
+            [disabled]="actualizando"
+          >
+            {{ actualizando ? 'Guardando...' : 'Guardar cambios' }}
           </ion-button>
         </form>
       </ion-content>

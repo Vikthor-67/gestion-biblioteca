@@ -78,11 +78,18 @@ exports.insertar = async (req, res) => {
         const libroExiste = await pool
             .request()
             .input("IdLibro", sql.Int, idLibroNum)
-            .query("SELECT TOP 1 IdLibro FROM dbo.Libro WHERE IdLibro = @IdLibro");
+            .query("SELECT TOP 1 IdLibro, Stock FROM dbo.Libro WHERE IdLibro = @IdLibro");
 
         if (!libroExiste.recordset || libroExiste.recordset.length === 0) {
             return res.status(404).json({
                 message: "El libro seleccionado no existe",
+            });
+        }
+
+        const stockActual = Number(libroExiste.recordset[0]?.Stock ?? 0);
+        if (Number.isNaN(stockActual) || stockActual <= 0) {
+            return res.status(409).json({
+                message: "No hay stock disponible para este libro",
             });
         }
 
@@ -97,18 +104,46 @@ exports.insertar = async (req, res) => {
             });
         }
 
-        await pool
-            .request()
-            .input("FechaPrestamo", sql.Date, fechaPrestamoDate)
-            .input("FechaDevolucion", sql.DateTime, null)
-            .input("IdLibro", sql.Int, idLibroNum)
-            .input("IdUsuario", sql.Int, idUsuarioNum)
-            .input("Latitud", sql.Decimal(10, 7), latitudNum)
-            .input("Longitud", sql.Decimal(10, 7), longitudNum)
-            .query(`
-                INSERT INTO dbo.Prestamo (FechaPrestamo, FechaDevolucion, IdLibro, IdUsuario, Latitud, Longitud)
-                VALUES (@FechaPrestamo, @FechaDevolucion, @IdLibro, @IdUsuario, @Latitud, @Longitud);
-            `);
+        const transaction = new sql.Transaction(pool);
+        try {
+            await transaction.begin();
+
+            const requestTx = new sql.Request(transaction);
+            const resultStock = await requestTx
+                .input("IdLibro", sql.Int, idLibroNum)
+                .query(`
+                    UPDATE dbo.Libro
+                    SET Stock = Stock - 1
+                    WHERE IdLibro = @IdLibro
+                      AND Stock > 0;
+                `);
+
+            if (!resultStock.rowsAffected || resultStock.rowsAffected[0] === 0) {
+                await transaction.rollback();
+                return res.status(409).json({
+                    message: "No hay stock disponible para este libro",
+                });
+            }
+
+            await new sql.Request(transaction)
+                .input("FechaPrestamo", sql.Date, fechaPrestamoDate)
+                .input("FechaDevolucion", sql.DateTime, null)
+                .input("IdLibro", sql.Int, idLibroNum)
+                .input("IdUsuario", sql.Int, idUsuarioNum)
+                .input("Latitud", sql.Decimal(10, 7), latitudNum)
+                .input("Longitud", sql.Decimal(10, 7), longitudNum)
+                .query(`
+                    INSERT INTO dbo.Prestamo (FechaPrestamo, FechaDevolucion, IdLibro, IdUsuario, Latitud, Longitud)
+                    VALUES (@FechaPrestamo, @FechaDevolucion, @IdLibro, @IdUsuario, @Latitud, @Longitud);
+                `);
+
+            await transaction.commit();
+        } catch (errorTx) {
+            if (transaction._aborted !== true) {
+                await transaction.rollback();
+            }
+            throw errorTx;
+        }
 
         res.status(201).json({
             message: "Prestamo registrado de forma correcta",
@@ -138,15 +173,57 @@ exports.actualizarFechaDevolucion = async (req, res) => {
         }
 
         const pool = await getpool();
-        const result = await pool
+        const prestamo = await pool
             .request()
             .input("IdPrestamo", sql.Int, IdPrestamo)
-            .input("FechaDevolucion", sql.DateTime, FechaDevolucion)
             .query(`
-                UPDATE dbo.Prestamo
-                SET FechaDevolucion = @FechaDevolucion
+                SELECT TOP 1 IdPrestamo, IdLibro, FechaDevolucion
+                FROM dbo.Prestamo
                 WHERE IdPrestamo = @IdPrestamo;
             `);
+
+        if (!prestamo.recordset || prestamo.recordset.length === 0) {
+            return res.status(404).json({
+                message: "Préstamo no encontrado",
+            });
+        }
+
+        const rowPrestamo = prestamo.recordset[0];
+        if (rowPrestamo.FechaDevolucion) {
+            return res.status(400).json({
+                message: "El préstamo ya fue devuelto",
+            });
+        }
+
+        const transaction = new sql.Transaction(pool);
+        let result = null;
+        try {
+            await transaction.begin();
+
+            result = await new sql.Request(transaction)
+                .input("IdPrestamo", sql.Int, IdPrestamo)
+                .input("FechaDevolucion", sql.DateTime, FechaDevolucion)
+                .query(`
+                    UPDATE dbo.Prestamo
+                    SET FechaDevolucion = @FechaDevolucion
+                    WHERE IdPrestamo = @IdPrestamo;
+                `);
+
+            await new sql.Request(transaction)
+                .input("IdLibro", sql.Int, Number(rowPrestamo.IdLibro))
+                .query(`
+                    UPDATE dbo.Libro
+                    SET Stock = ISNULL(Stock, 0) + 1
+                    WHERE IdLibro = @IdLibro;
+                `);
+
+            await transaction.commit();
+        } catch (errorTx) {
+            if (transaction._aborted !== true) {
+                await transaction.rollback();
+            }
+            throw errorTx;
+        }
 
         if (!result.rowsAffected || result.rowsAffected[0] === 0) {
             return res.status(404).json({

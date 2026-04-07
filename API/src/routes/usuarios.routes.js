@@ -11,4 +11,10 @@ router.get("/:IdUsuario", controller.ListarUsuariosxid);
 //POST Insertar Autor
 router.post("/", controller.insertar);
 
+//PUT Actualizar Usuario
+router.put("/:IdUsuario", controller.actualizar);
+
+//DELETE Eliminar Usuario
+router.delete("/:IdUsuario", controller.eliminar);
+
 module.exports = router;

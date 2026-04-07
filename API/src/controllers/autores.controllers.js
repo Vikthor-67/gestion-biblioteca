@@ -64,3 +64,91 @@ exports.insertar = async (req, res) => {
         });
     }
 };
+
+//PUT: Actualizar autor
+exports.actualizar = async (req, res) => {
+    try {
+        const IdAutor = parseInt(req.params.IdAutor, 10);
+        const { Nombre, Nacionalidad } = req.body;
+
+        if (isNaN(IdAutor)) {
+            return res.status(400).json({ message: "ID inválido" });
+        }
+
+        if (!Nombre || !Nacionalidad) {
+            return res.status(400).json({
+                message: "Campos inválidos, favor verificar cada uno",
+            });
+        }
+
+        const pool = await getpool();
+        const result = await pool
+            .request()
+            .input("IdAutor", sql.Int, IdAutor)
+            .input("Nombre", sql.NVarChar(150), Nombre)
+            .input("Nacionalidad", sql.NVarChar(100), Nacionalidad)
+            .query(`
+                UPDATE dbo.Autor
+                SET Nombre = @Nombre,
+                    Nacionalidad = @Nacionalidad
+                WHERE IdAutor = @IdAutor;
+            `);
+
+        if (!result.rowsAffected || result.rowsAffected[0] === 0) {
+            return res.status(404).json({ message: "Autor no encontrado" });
+        }
+
+        res.status(200).json({ message: "Autor actualizado correctamente" });
+    } catch (error) {
+        res.status(500).json({
+            message: "Error al actualizar autor",
+            error: error.message,
+        });
+    }
+};
+
+//DELETE: Eliminar autor (solo si no tiene libros asociados)
+exports.eliminar = async (req, res) => {
+    try {
+        const IdAutor = parseInt(req.params.IdAutor, 10);
+
+        if (isNaN(IdAutor)) {
+            return res.status(400).json({ message: "ID inválido" });
+        }
+
+        const pool = await getpool();
+        const asociado = await pool
+            .request()
+            .input("IdAutor", sql.Int, IdAutor)
+            .query(`
+                SELECT TOP 1 IdLibro
+                FROM dbo.Libro
+                WHERE IdAutor = @IdAutor;
+            `);
+
+        if (asociado.recordset && asociado.recordset.length > 0) {
+            return res.status(409).json({
+                message: "No se puede eliminar, tiene libros asociados",
+            });
+        }
+
+        const result = await pool
+            .request()
+            .input("IdAutor", sql.Int, IdAutor)
+            .query(`
+                DELETE FROM dbo.Autor
+                WHERE IdAutor = @IdAutor;
+            `);
+
+        if (!result.rowsAffected || result.rowsAffected[0] === 0) {
+            return res.status(404).json({ message: "Autor no encontrado" });
+        }
+
+        res.status(200).json({ message: "Autor eliminado correctamente" });
+    } catch (error) {
+        res.status(500).json({
+            message: "Error al eliminar autor",
+            error: error.message,
+        });
+    }
+};

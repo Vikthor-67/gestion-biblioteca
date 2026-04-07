@@ -35,6 +35,8 @@ export class PrestamoPage implements OnInit, OnDestroy {
   usuarios: any[] = [];
   private destroy$ = new Subject<void>();
   private autorSubscription: Subscription | null = null;
+  private autoRefreshHandle: any = null;
+  private readonly intervaloAutoRefreshMs = 5000;
   formNuevoPrestamo: FormGroup;
 
   constructor(
@@ -68,10 +70,20 @@ export class PrestamoPage implements OnInit, OnDestroy {
     this.route.queryParams.subscribe((params) => {
       this.soloActivos = params['activos'] === 'true';
       this.cargar();
+      this.configurarAutoRefreshActivos();
     });
   }
 
+  ionViewWillEnter() {
+    this.configurarAutoRefreshActivos();
+  }
+
+  ionViewDidLeave() {
+    this.detenerAutoRefreshActivos();
+  }
+
   ngOnDestroy() {
+    this.detenerAutoRefreshActivos();
     this.destroy$.next();
     this.destroy$.complete();
     if (this.autorSubscription) {
@@ -79,15 +91,27 @@ export class PrestamoPage implements OnInit, OnDestroy {
     }
   }
 
+  private configurarAutoRefreshActivos() {
+    this.detenerAutoRefreshActivos();
+
+    if (!this.soloActivos) {
+      return;
+    }
+
+    this.autoRefreshHandle = setInterval(() => {
+      this.cargar();
+    }, this.intervaloAutoRefreshMs);
+  }
+
+  private detenerAutoRefreshActivos() {
+    if (this.autoRefreshHandle) {
+      clearInterval(this.autoRefreshHandle);
+      this.autoRefreshHandle = null;
+    }
+  }
+
   private ordenarPrestamos(lista: any[]): any[] {
     return [...lista].sort((a: any, b: any) => {
-      const cmpUsuario = String(a?.Usuario || '').localeCompare(
-        String(b?.Usuario || ''),
-        'es',
-        { sensitivity: 'base', ignorePunctuation: true },
-      );
-      if (cmpUsuario !== 0) return cmpUsuario;
-
       const cmpLibro = String(a?.Libro || '').localeCompare(
         String(b?.Libro || ''),
         'es',
@@ -95,15 +119,24 @@ export class PrestamoPage implements OnInit, OnDestroy {
       );
       if (cmpLibro !== 0) return cmpLibro;
 
+      const cmpUsuario = String(a?.Usuario || '').localeCompare(
+        String(b?.Usuario || ''),
+        'es',
+        { sensitivity: 'base', ignorePunctuation: true },
+      );
+      if (cmpUsuario !== 0) return cmpUsuario;
+
       return Number(a?.IdPrestamo || 0) - Number(b?.IdPrestamo || 0);
     });
   }
 
   filtrarPrestamos(event: any) {
     const valor = String(event.target.value || '').toLowerCase();
-    const filtrados = this.prestamo.filter((p) =>
-      p.IdPrestamo.toString().toLowerCase().includes(valor),
-    );
+    const filtrados = this.prestamo.filter((p) => {
+      const libro = String(p?.Libro || '').toLowerCase();
+      const usuario = String(p?.Usuario || '').toLowerCase();
+      return libro.includes(valor) || usuario.includes(valor);
+    });
     this.prestamosFiltrados = this.ordenarPrestamos(filtrados);
   }
 
@@ -188,10 +221,39 @@ export class PrestamoPage implements OnInit, OnDestroy {
       this.formNuevoPrestamo.patchValue({ IdLibro: null }, { emitEvent: false });
       return;
     }
-    
+
+    const idAutorNum = Number(idAutor);
+    const autorSeleccionado = this.autores.find(
+      (a: any) => Number(a?.IdAutor) === idAutorNum,
+    );
+    const nombreAutorSeleccionado = String(autorSeleccionado?.Nombre || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+
     const librosFiltrados = this.librosOriginal.filter((l: any) => {
-      console.log(`  Comparando: libro.IdAutor=${l.IdAutor} vs idAutor=${idAutor} => ${l.IdAutor === idAutor}`);
-      return l.IdAutor === idAutor;
+      const stockDisponible = Number(l?.Stock ?? 0) > 0;
+      if (!stockDisponible) {
+        return false;
+      }
+
+      const tieneIdAutor = l?.IdAutor !== undefined && l?.IdAutor !== null;
+      if (tieneIdAutor) {
+        const coincidePorId = Number(l.IdAutor) === idAutorNum;
+        console.log(`  Comparando por ID: libro.IdAutor=${l.IdAutor} vs idAutor=${idAutorNum} => ${coincidePorId}`);
+        return coincidePorId;
+      }
+
+      const nombreAutorLibro = String(l?.Autor || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+      const coincidePorNombre =
+        !!nombreAutorSeleccionado && nombreAutorLibro === nombreAutorSeleccionado;
+      console.log(`  Comparando por nombre: libro.Autor=${l?.Autor} vs autorSel=${autorSeleccionado?.Nombre} => ${coincidePorNombre}`);
+      return coincidePorNombre;
     });
     
     console.log(`✅ Libros encontrados: ${librosFiltrados.length} de ${this.librosOriginal.length}`);
@@ -241,11 +303,16 @@ export class PrestamoPage implements OnInit, OnDestroy {
     this.cargandoLibros = true;
     try {
       const resp = await this.librosService.getLibros();
-      this.librosOriginal = [...(resp || [])].sort((a: any, b: any) =>
+      const librosOrdenados = [...(resp || [])].sort((a: any, b: any) =>
         String(a?.Titulo || '').localeCompare(String(b?.Titulo || ''), 'es', {
           sensitivity: 'base',
           ignorePunctuation: true,
         }),
+      );
+
+      // Solo se prestan libros con stock disponible.
+      this.librosOriginal = librosOrdenados.filter(
+        (l: any) => Number(l?.Stock ?? 0) > 0,
       );
 
       console.log('📚 Libros cargados:', this.librosOriginal);
@@ -253,9 +320,16 @@ export class PrestamoPage implements OnInit, OnDestroy {
         console.log('📖 Primer libro:', this.librosOriginal[0]);
       }
 
-      if (this.librosOriginal.length === 0) {
+      if (librosOrdenados.length === 0) {
         const toast = await this.toastCtrl.create({
           message: 'No hay libros disponibles.',
+          color: 'warning',
+          duration: 2500,
+        });
+        await toast.present();
+      } else if (this.librosOriginal.length === 0) {
+        const toast = await this.toastCtrl.create({
+          message: 'No hay libros con stock disponible para préstamo.',
           color: 'warning',
           duration: 2500,
         });
@@ -374,7 +448,30 @@ export class PrestamoPage implements OnInit, OnDestroy {
     return !!control && control.invalid && (control.dirty || control.touched);
   }
 
+  libroSeleccionadoSinStock(): boolean {
+    const idLibro = Number(this.formNuevoPrestamo.get('IdLibro')?.value);
+    if (!idLibro) return false;
+
+    const libroSeleccionado = this.libros.find(
+      (l: any) => Number(l?.IdLibro) === idLibro,
+    );
+    if (!libroSeleccionado) return false;
+
+    const stock = Number(libroSeleccionado?.Stock ?? 0);
+    return stock <= 0;
+  }
+
   async guardarNuevoPrestamo() {
+    if (this.libroSeleccionadoSinStock()) {
+      const toast = await this.toastCtrl.create({
+        message: 'El libro seleccionado no tiene stock disponible.',
+        color: 'warning',
+        duration: 2500,
+      });
+      await toast.present();
+      return;
+    }
+
     if (this.formNuevoPrestamo.invalid) {
       this.formNuevoPrestamo.markAllAsTouched();
       const toast = await this.toastCtrl.create({
